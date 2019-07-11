@@ -209,10 +209,6 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-          filters:
-            branches:
-              only:
-                - master
       - amplify_ui_tests:
           filters:
             branches:
