@@ -2,10 +2,13 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 machine:
     environment:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
+
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
 
 defaults: &defaults
   docker:
@@ -33,7 +36,7 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths: amplify-js
-  amplify-ui-tests:
+  amplify_ui_tests:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -205,7 +208,7 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - amplify-ui-tests:
+      - amplify_ui_tests:
         requires:
           - build
         filters:
