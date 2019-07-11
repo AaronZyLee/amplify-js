@@ -28,7 +28,6 @@ jobs:
       - run: yarn run bootstrap
       - run: yarn run build
       - run: yarn run coverage
-
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
@@ -37,7 +36,9 @@ jobs:
           root: /root
           paths: amplify-js
   amplify_ui_tests:
-    <<: *defaults
+    working_directory: ~/repo
+    docker:
+        - image: circleci/node:10.8
     steps:
       - attach_workspace:
           at: ./
@@ -208,9 +209,11 @@ workflows:
   build_test_deploy:
     jobs:
       - build
+          filters:
+            branches:
+              only:
+                - master
       - amplify_ui_tests:
-          requires:
-            - build
           filters:
             branches:
               only:
@@ -218,6 +221,10 @@ workflows:
       - unit_test:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
       - integration_test_setup:
           filters:
             branches:
