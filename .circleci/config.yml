@@ -42,14 +42,14 @@ jobs:
       - attach_workspace:
           at: ./
       - run: 
-        name: "Build amplify cli"
-        command: |
-          git clone -b dev --single-branch https://github.com/AaronZyLee/amplify-cli.git
-          cd amplify-cli
-          yarn cache clean --force
-          yarn
-          yarn config set workspaces-experimental true
-          yarn run production-build
+          name: "Build amplify cli"
+          command: |
+            git clone -b dev --single-branch https://github.com/AaronZyLee/amplify-cli.git
+            cd amplify-cli
+            yarn cache clean --force
+            yarn
+            yarn config set workspaces-experimental true
+            yarn run production-build
       - run: sudo apt-get install -y lsof
       - aws-cli/install
       - aws-cli/configure
