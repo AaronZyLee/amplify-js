@@ -209,12 +209,12 @@ workflows:
     jobs:
       - build
       - amplify_ui_tests:
-        requires:
-          - build
-        filters:
-          branches:
-            only:
-              - aaron
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - aaron
       - unit_test:
           requires:
             - build
