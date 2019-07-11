@@ -33,6 +33,27 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths: amplify-js
+  amplify-ui-tests:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: 
+        name: "Build amplify cli"
+        command: |
+          git clone -b dev --single-branch https://github.com/AaronZyLee/amplify-cli.git
+          cd amplify-cli
+          yarn cache clean --force
+          yarn
+          yarn config set workspaces-experimental true
+          yarn run production-build
+      - run: sudo apt-get install -y lsof
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js"
+          name: "Run Amplify ui tests"
+          no_output_timeout: 45m
   unit_test:
     <<: *defaults
     working_directory: ~/amplify-js
@@ -184,6 +205,13 @@ workflows:
   build_test_deploy:
     jobs:
       - build
+      - amplify-ui-tests:
+        requires:
+          - build
+        filters:
+          branches:
+            only:
+              - aaron
       - unit_test:
           requires:
             - build
