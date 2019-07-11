@@ -208,7 +208,6 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build
       - amplify_ui_tests:
           filters:
             branches:
