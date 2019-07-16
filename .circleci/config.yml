@@ -34,6 +34,7 @@ jobs:
             yarn
             yarn config set workspaces-experimental true
             yarn run production-build
+      - run: cypress install
       - run: apt-get install -y sudo
       - run: sudo apt-get install -y lsof
       - run: sudo apt-get install -y python
@@ -41,17 +42,17 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/auth"
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js"
           name: "Run Amplify ui tests-1"
           no_output_timeout: 45m
-      - run:
-          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/storage"
-          name: "Run Amplify ui tests-2"
-          no_output_timeout: 45m
-      - run:
-          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/api"
-          name: "Run Amplify ui tests-3"
-          no_output_timeout: 45m
+      # - run:
+      #     command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/storage"
+      #     name: "Run Amplify ui tests-2"
+      #     no_output_timeout: 45m
+      # - run:
+      #     command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/api"
+      #     name: "Run Amplify ui tests-3"
+      #     no_output_timeout: 45m
 
 workflows:
   version: 2
