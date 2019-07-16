@@ -34,7 +34,7 @@ jobs:
             yarn
             yarn config set workspaces-experimental true
             yarn run production-build
-      - run: cypress install
+      - run: npm install --save-dev cypress
       - run: apt-get install -y sudo
       - run: sudo apt-get install -y lsof
       - run: sudo apt-get install -y python
