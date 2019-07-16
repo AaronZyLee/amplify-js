@@ -41,8 +41,16 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js"
-          name: "Run Amplify ui tests"
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/auth"
+          name: "Run Amplify ui tests-1"
+          no_output_timeout: 45m
+      - run:
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/storage"
+          name: "Run Amplify ui tests-2"
+          no_output_timeout: 45m
+      - run:
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/api"
+          name: "Run Amplify ui tests-3"
           no_output_timeout: 45m
 
 workflows:
