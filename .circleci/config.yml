@@ -23,11 +23,15 @@ jobs:
     docker:
         - image: cypress/base:10
     steps:
-      - attach_workspace:
-          at: ./
+      # - attach_workspace:
+      #     at: ./
+      - checkout
       - run: 
           name: "Build amplify cli"
           command: |
+            cd ..
+            mkdir videos
+            mkdir screenshots
             git clone -b dev --single-branch https://github.com/AaronZyLee/amplify-cli.git
             cd amplify-cli
             yarn cache clean --force
@@ -42,9 +46,14 @@ jobs:
       - aws-cli/install
       - aws-cli/configure
       - run:
-          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js"
+          command: "cd ../amplify-cli/packages/amplify-ui-tests && yarn run ui js"
           name: "Run Amplify ui tests-1"
           no_output_timeout: 45m
+      - store_artifacts:
+          path: /root/videos
+      - store_artifacts:
+          path: /root/screenshots
+
       # - run:
       #     command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js/storage"
       #     name: "Run Amplify ui tests-2"
