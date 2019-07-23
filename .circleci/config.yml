@@ -38,11 +38,16 @@ jobs:
             yarn
             yarn config set workspaces-experimental true
             yarn run production-build
-      - run: npm install --save-dev cypress
-      - run: apt-get install -y sudo
-      - run: sudo apt-get install -y lsof
-      - run: sudo apt-get install -y python
-      - run: sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+      - run:
+          name: "Install Cypress Binary"
+          command: npm install --save-dev cypress
+      - run:
+          name: "Install AWS CLI dependencies"
+          command: |
+            apt-get install -y sudo
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python
+            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
       - aws-cli/install
       - aws-cli/configure
       - run:
