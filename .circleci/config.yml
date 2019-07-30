@@ -32,7 +32,7 @@ jobs:
             cd ..
             mkdir videos
             mkdir screenshots
-            git clone -b dev --single-branch https://github.com/AaronZyLee/amplify-cli.git
+            git clone -b integtest --single-branch https://github.com/AaronZyLee/amplify-cli.git
             cd amplify-cli
             yarn cache clean --force
             yarn
