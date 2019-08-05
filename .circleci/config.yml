@@ -6,7 +6,8 @@ version: 2.1
 machine:
     environment:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
-
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
 defaults: &defaults
   docker:
     - image: cypress/base:10
