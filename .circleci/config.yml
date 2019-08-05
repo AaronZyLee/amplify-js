@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 machine:
     environment:
       PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
@@ -34,6 +34,51 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths: amplify-js
+  amplify_ui_tests:
+    working_directory: ~/
+    docker:
+        - image: cypress/base:10
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: 
+          name: "Build amplify cli"
+          command: |
+            mkdir videos
+            mkdir screenshots
+            git clone -b integtest --single-branch https://github.com/AaronZyLee/amplify-cli.git
+            cd amplify-cli
+            yarn cache clean --force
+            yarn
+            yarn config set workspaces-experimental true
+            yarn run production-build
+      - run:
+          name: "Install Cypress Binary"
+          command: npm install --save-dev cypress
+      - run:
+          name: "Install AWS CLI dependencies"
+          command: |
+            apt-get install -y sudo
+            sudo apt-get install -y lsof
+            sudo apt-get install -y python
+            sudo apt-get update && sudo apt-get install -y python-pip libpython-dev
+      - aws-cli/install
+      - aws-cli/configure
+      - run:
+          name: "Link dependencies"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+            cd ../aws-amplify-react
+            yarn link
+      - run:
+          command: "cd amplify-cli/packages/amplify-ui-tests && yarn run ui js"
+          name: "Run Amplify ui tests"
+          no_output_timeout: 45m
+      - store_artifacts:
+          path: /root/videos
+      - store_artifacts:
+          path: /root/screenshots
   unit_test:
     <<: *defaults
     working_directory: ~/amplify-js
@@ -228,49 +273,52 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - unit_test:
+      # - unit_test:
+      #     requires:
+      #       - build
+      # - integration_test_setup:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #     requires:
+      #       - build
+      # - integ_react_predictions:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #     requires:
+      #       - integration_test_setup
+      # - integration_test_react:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #     requires:
+      #       - integration_test_setup
+      # - integration_test_vue:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #     requires:
+      #       - integration_test_setup
+      # - deploy:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
+      #     requires:
+      #       - unit_test
+      #       - integration_test_react
+      #       - integration_test_vue
+      - amplify_ui_tests:
           requires:
             - build
-      - integration_test_setup:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-          requires:
-            - build
-      - integ_react_predictions:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-          requires:
-            - integration_test_setup
-      - integration_test_react:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-          requires:
-            - integration_test_setup
-      - integration_test_vue:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-          requires:
-            - integration_test_setup
-      - deploy:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
-          requires:
-            - unit_test
-            - integration_test_react
-            - integration_test_vue
